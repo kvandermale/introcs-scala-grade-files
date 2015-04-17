@@ -47,30 +47,47 @@ object gradefiles extends App {
     (columns, headerNames, quantitiesArray, weightsArray)
   }
 
-  val exampleHeading = "Exams, Homework, Project"
-  val exampleData = "10, a, 25, 35.6"
-  val exampleData2 = "10, a, 25, 35"
+  //val courseName = Try(args(0)) getOrElse("comp150")
+  //println(s">> Reading $courseName categories file")
+  //val results = readCategoryFile(courseName)
+  //results match {
+    //case (n, h, q, w) => {
+      //println(s"There are $n columns of data")
+      //println("Headings")
+      //h foreach println
+      //println("Quantities")
+      //q foreach println
+      //println("Weights")
+      //w foreach println
+   
+ 
 
-  println(">> Heading")
-  parseCSVHeader(exampleHeading) foreach println
-  println(">> CSV Row of Doubles")
-  parseCSVRowOfDoubles(exampleData, -1.0) foreach println
-  println(">> CSV Row of Ints")
-  parseCSVRowOfInts(exampleData2, -1) foreach println
-
-  println(">> Reading the Category File")
-  val courseName = Try(args(0)) getOrElse("comp150")
-  println(s">> Reading $courseName categories file")
-  val results = readCategoryFile(courseName)
-  results match {
-    case (n, h, q, w) => {
-      println(s"There are $n columns of data")
-      println("Headings")
-      h foreach println
-      println("Quantities")
-      q foreach println
-      println("Weights")
-      w foreach println
-   }
- }
+    def readStudentFiles(courseName : String) : (Array[String], Array[String], Array[String]) = {
+        val courseFileName = s"students_$courseName.txt"
+        val file = Source.fromFile(courseFileName)
+        val n = file.getLines.length
+        val ids = Array.ofDim[String](n)
+        val lastNames = Array.ofDim[String](n)
+        val firstNames = Array.ofDim[String](n)
+        var i = 0
+        for (line <- file.getLines) {
+            val parts = parseCSVHeader(line)
+            ids(i) = parts(0)
+            lastNames(i) = parts(1)
+            firstNames(i) = parts(2)
+        }
+        (ids, lastNames, firstNames)
+  }
+    def readGradeFiles(courseName : String) : Array[(String, Int, Int)] = {
+        val studentids = readStudentFiles(0)
+        val students = parseCSVHeader(studentids)
+        val courseFileName = s"$students$courseName.data"
+        val file = Source.fromFile(courseFileName)
+        var gradefiles = Array[(String, Int, Int)]
+        for (line <- file.getLines) {
+            val parts = parseCSVHeader(line)
+            gradefiles = gradefiles :+ (parts(0), parts(1).toInt, parts(2).toInt)
+        }
+        gradefiles
+    }
 }
