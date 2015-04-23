@@ -77,17 +77,50 @@ object gradefiles extends App {
             firstNames(i) = parts(2)
         }
         (ids, lastNames, firstNames)
-  }
-    def readGradeFiles(courseName : String) : Array[(String, Int, Int)] = {
-        val studentids = readStudentFiles(0)
-        val students = parseCSVHeader(studentids)
-        val courseFileName = s"$students$courseName.data"
-        val file = Source.fromFile(courseFileName)
-        var gradefiles = Array[(String, Int, Int)]
-        for (line <- file.getLines) {
-            val parts = parseCSVHeader(line)
-            gradefiles = gradefiles :+ (parts(0), parts(1).toInt, parts(2).toInt)
-        }
-        gradefiles
     }
+    
+    val CourseName = "comp170"
+    val categories = readCategoryFile(CourseName)
+    val students = readStudentFiles(CourseName)
+    
+    def doGrading(courseName : String, categories : (Int, Array[String], Array[Int], Array[Int]), students : (Array[String], Array[String], Array[String])) : (Array[String], Array[Int], Array[Double]) = {
+        val studentid = students._1
+        var i = 0
+        for (i <- 0 to studentid.length-1)
+            studentid(i)
+            val courseFileName = s"$studentid" + s"$courseName.data"
+            val file = Source.fromFile(courseFileName)
+            val n = file.getLines.length
+            var k = 0
+            val assignmentName = Array.ofDim[String](n)
+            val sum = Array.ofDim[Double](categories._1)
+            for (line <- file.getLines) {
+                val parts = parseCSVHeader(line)
+                assignmentName(k) = parts(0)
+            }
+                val lines = file.getLines
+                val quantity = lines.next
+                val quantityArray = parseCSVRowOfInts(quantity, -1)
+                val score = lines.next
+                val scoreArray = parseCSVRowOfDoubles(score, -1)
+        (assignmentName, quantityArray, scoreArray)
+    }
+    
+
+     
+    //val results = readCategoryFile("comp170")
+    //results match {
+        //case (n, h, q, w) => {
+          //println(s"There are $n columns of data")
+          //println("Headings")
+          //h foreach println
+          //println("Quantities")
+          //q foreach println
+          //println("Weights")
+          //w foreach println
+        //}
+    //}
+    
+    
+    
 }
